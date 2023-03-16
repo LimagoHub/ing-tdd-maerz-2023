@@ -19,6 +19,10 @@ public class PersonenServiceImpl {
         happy day pass Person to Repo
      */
     void speichern(Person person) throws PersonenServiceException {
-
+        if(person ==null)
+            throw new PersonenServiceException("Person should not be null");
+        if(person.getVorname() == null || person.getVorname().length() < 2)
+            throw new PersonenServiceException("Vorname too short");
+        throw new PersonenServiceException("Nachname too short");
     }
 }
