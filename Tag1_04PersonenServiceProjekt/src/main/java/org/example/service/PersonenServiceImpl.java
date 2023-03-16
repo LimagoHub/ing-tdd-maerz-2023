@@ -8,7 +8,7 @@ import org.example.repository.PersonenRepository;
 public class PersonenServiceImpl {
 
     private final PersonenRepository repo;
-
+    private final BlacklistService blacklistService;
 
     /*
         person == null => PSE
@@ -19,10 +19,34 @@ public class PersonenServiceImpl {
         happy day pass Person to Repo
      */
     void speichern(Person person) throws PersonenServiceException {
+        try {
+            speichernImpl(person);
+        } catch (RuntimeException e) {
+            throw new PersonenServiceException("Interner Fehler", e);
+        }
+    }
+
+    private void speichernImpl(Person person) throws PersonenServiceException {
+        checkPerson(person);
+        repo.save(person);
+    }
+
+    private void checkPerson(Person person) throws PersonenServiceException {
+        validate(person);
+        businessCheck(person);
+    }
+
+    private void businessCheck(Person person) throws PersonenServiceException {
+        if(blacklistService.isBlacklisted(person))
+            throw new PersonenServiceException("Blacklisted Person");
+    }
+
+    private static void validate(Person person) throws PersonenServiceException {
         if(person ==null)
             throw new PersonenServiceException("Person should not be null");
         if(person.getVorname() == null || person.getVorname().length() < 2)
             throw new PersonenServiceException("Vorname too short");
-        throw new PersonenServiceException("Nachname too short");
+        if(person.getNachname() == null || person.getNachname().length() < 2)
+            throw new PersonenServiceException("Nachname too short");
     }
 }
