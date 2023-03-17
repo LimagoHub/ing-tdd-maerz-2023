@@ -56,6 +56,7 @@ public class Euro2DollarPresenterImpl implements Euro2DollarPresenter {
 		// Ergebnis in String wandeln
 		// ergebnis in Maske schreiben
 		// Fehler immer in Dollarfeld schreiben
+		// RuntimeException abfangen und Meldung im Dollarfeld ausgeben
 	
 	}
 	
@@ -64,7 +65,7 @@ public class Euro2DollarPresenterImpl implements Euro2DollarPresenter {
 	 */
 	@Override
 	public void onBeenden() {  
-		 view.close();
+		view.close();
 	}
 	
 	/* (non-Javadoc)
