@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.repository.Person;
 import org.example.repository.PersonenRepository;
 
+import java.util.UUID;
+
 @RequiredArgsConstructor
 public class PersonenServiceImpl {
 
@@ -48,5 +50,10 @@ public class PersonenServiceImpl {
             throw new PersonenServiceException("Vorname too short");
         if(person.getNachname() == null || person.getNachname().length() < 2)
             throw new PersonenServiceException("Nachname too short");
+    }
+
+    public void speichern(String vorname, String nachname) throws PersonenServiceException{
+        Person p = Person.builder().id(UUID.randomUUID().toString()).vorname(vorname).nachname(nachname).build();
+        speichern(p);
     }
 }

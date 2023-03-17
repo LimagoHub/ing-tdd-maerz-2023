@@ -2,6 +2,7 @@ package org.example.service;
 
 import org.example.repository.Person;
 import org.example.repository.PersonenRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -25,6 +26,7 @@ class PersonenServiceImplTest {
     @Mock
     private BlacklistService blacklistServiceMock;
 
+    private int counter = 0;
     @Test
     void speichern_personNull_throwsPersonenServiceException() throws Exception{
         PersonenServiceException ex = assertThrows(PersonenServiceException.class, ()->objectUnderTest.speichern(null));
@@ -50,6 +52,7 @@ class PersonenServiceImplTest {
         assertEquals("Nachname too short", ex.getMessage());
     }
 
+      
     @Test
     void speichern_unerwuenschtePerson_throwsPersonenServiceException() throws Exception{
         when(blacklistServiceMock.isBlacklisted(any(Person.class))).thenReturn(true);
@@ -78,6 +81,30 @@ class PersonenServiceImplTest {
 
         inOrder.verify(blacklistServiceMock,times(1)).isBlacklisted(validPerson);
         inOrder.verify(personenRepositoryMock, times(1)).save(validPerson);
+
+
+    }
+
+    @Test
+    void speichernOverloaded_happyDay_personPassedToRepo() throws Exception{
+
+        doAnswer(invocationOnMock -> {
+            Person p = invocationOnMock.getArgument(0);
+            assertEquals("John", p.getVorname());
+            assertEquals("Doe", p.getNachname());
+            counter ++;
+            return null;
+        }).when(personenRepositoryMock).save(any(Person.class));
+        when(blacklistServiceMock.isBlacklisted(any(Person.class))).thenAnswer(invocationOnMock -> {
+            // irgendein Kram
+            return false;
+        });
+        Person validPerson = Person.builder().id("1").vorname("John").nachname("Doe").build();
+        objectUnderTest.speichern("John","Doe");
+
+
+
+
 
 
     }
